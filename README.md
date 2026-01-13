@@ -1,0 +1,1 @@
+# manual-qa-case-study-reporting-platform
