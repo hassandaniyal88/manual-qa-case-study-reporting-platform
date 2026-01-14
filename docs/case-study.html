@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Building a Scalable Multi-Agency Reporting System: A QA Case Study</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.7;
+        color: #222;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    h1, h2, h3 {
+        color: #0b3d56;
+    }
+    h1 {
+        margin-bottom: 20px;
+        font-size: 36px;
+    }
+    h2 {
+        margin-top: 40px;
+        font-size: 26px;
+    }
+    h3 {
+        margin-top: 25px;
+        font-size: 20px;
+    }
+    p {
+        margin: 15px 0;
+        font-size: 16px;
+    }
+    ul {
+        margin: 10px 0 20px 25px;
+    }
+    li {
+        margin-bottom: 8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Building a Scalable Multi-Agency Reporting System: A QA-Led Case Study</h1>
+
+<h2>INTRODUCTION</h2>
+<p>
+In 2025–2026, I was responsible for QA on one of the most complex modules of a national-scale public safety platform.
+The platform enables civilians to submit incident reports that must be routed to the correct public safety agency anywhere in the United States.
+To achieve this, the system uses a multi-workspace architecture, where each agency operates in its own isolated workspace with custom rules, users, and activation states.
+</p>
+
+<p>
+My role as QA was not only to test functionality, but also to analyze requirements, identify logic gaps, validate user flows,
+write clarification questions, and ensure that all roles, workspaces, and workflows behaved consistently across the entire system.
+</p>
+
+<p>
+This case study documents how I, as a QA Engineer, helped build and validate a scalable multi-agency system that supports nationwide onboarding.
+</p>
+
+<h2>BACKGROUND</h2>
+<p>The system supports four primary user roles, each with different permissions:</p>
+
+<ul>
+    <li>Civilian Users</li>
+    <li>Agency Staff</li>
+    <li>Supervisory Users</li>
+    <li>System Admins</li>
+</ul>
+
+<p>Each agency has its own workspace containing:</p>
+
+<ul>
+    <li>Its own users</li>
+    <li>Its own reports</li>
+    <li>Its own public content</li>
+    <li>Its own activation status (Draft → Pending → Live)</li>
+</ul>
+
+<p>
+The challenge was to implement an engine that allows a civilian anywhere in the country to:
+</p>
+
+<ul>
+    <li>Search and join their local agency</li>
+    <li>Switch agencies if traveling</li>
+    <li>Submit reports with correct routing</li>
+    <li>See public information in a statewide, role-filtered format</li>
+    <li>Follow strict logic rules that vary by user type</li>
+</ul>
+
+<p>This required deep testing, requirement discovery, and logic refinement.</p>
+
+<h2>THE CHALLENGE</h2>
+
+<p>The initial documentation for this module had several issues:</p>
+
+<h3>1. Requirements were incomplete or contradictory</h3>
+<p>Multiple documents had different expectations for:</p>
+<ul>
+    <li>Agency activation states</li>
+    <li>Cross-agency visibility</li>
+    <li>Report routing</li>
+    <li>Public post visibility</li>
+    <li>Subscription/contract workflows</li>
+</ul>
+
+<h3>2. Many real-world scenarios were not defined</h3>
+
+<ul>
+    <li>Civilian lives in one city but reports an incident in another</li>
+    <li>An agency is visible but not accepting reports</li>
+    <li>Public content overlaps between agencies</li>
+    <li>Multi-step subscription logic with many states</li>
+</ul>
+
+<h3>3. Complex multi-role behavior</h3>
+<p>Rules applied differently depending on role, workspace state, or report type.</p>
+
+<h3>4. No single source of truth</h3>
+<p>Implementation spanned multiple documents, emails, UI files, and refinement notes.</p>
+
+<h2>MY ROLE AS QA ENGINEER</h2>
+
+<p>I took a leadership role in defining clarity, structure, and consistency. My responsibilities included:</p>
+
+<ul>
+    <li><strong>Requirements Analysis</strong> — cross-checking all major documents and identifying missing logic.</li>
+    <li><strong>Logic Gap Detection</strong> — discovering undefined or conflicting behaviors.</li>
+    <li><strong>Clarification Questions</strong> — validating assumptions with the client early.</li>
+    <li><strong>Full QA Planning</strong> — designing detailed scenarios across roles, states, and workflows.</li>
+    <li><strong>Defect Identification</strong> — testing and finding system-level issues.</li>
+    <li><strong>Ticket Creation</strong> — converting vague requirements into dev-ready acceptance criteria.</li>
+    <li><strong>Maintaining Feedback Tracking</strong> — ensuring alignment between QA, dev, and product.</li>
+</ul>
+
+<h2>KEY LOGIC GAPS I DISCOVERED</h2>
+
+<h3>Gap 1 — Cross-agency visibility rules were inconsistent</h3>
+<p>Should civilians see:</p>
+
+<ul>
+    <li>Only their agency’s content?</li>
+    <li>Nearby agencies?</li>
+    <li>Full statewide feed?</li>
+</ul>
+
+<p><strong>After QA-led clarification:</strong></p>
+<ul>
+    <li>User’s Primary Agency</li>
+    <li>Nearby Agencies (based on configuration)</li>
+    <li>Statewide Content</li>
+</ul>
+
+<h3>Gap 2 — Undefined agency compatibility for report submissions</h3>
+<p>
+Civilians could enter an incident address that didn’t match the selected agency.
+</p>
+
+<p><strong>After my QA inquiry:</strong> A compatibility fail-safe modal was introduced.</p>
+
+<h3>Gap 3 — Activation state behavior was unclear</h3>
+<p>Rules for Draft, Pending, and Live states were not defined.</p>
+
+<p><strong>Final clarification:</strong></p>
+<ul>
+    <li>Draft → not public</li>
+    <li>Pending → selectable but cannot receive reports</li>
+    <li>Live → fully active</li>
+</ul>
+
+<h3>Gap 4 — Civilian data persistence not defined</h3>
+<p>Clarified: Civilian data belongs to the user, not the agency.</p>
+
+<h3>Gap 5 — Subscription lifecycle missing contract instance rules</h3>
+<p>
+Defined the rule: each agency must have one active contract instance.
+</p>
+
+<h2>QA SOLUTIONS & CONTRIBUTIONS</h2>
+
+<ul>
+    <li>Created a unified logic model</li>
+    <li>Developed 60+ structured test cases</li>
+    <li>Merged conflicting requirements into one truth source</li>
+    <li>Improved developer clarity with actionable tickets</li>
+    <li>Strengthened client communication</li>
+    <li>Validated scalability for nationwide onboarding</li>
+</ul>
+
+<h2>OUTCOME & IMPACT</h2>
+
+<ul>
+    <li><strong>Zero misrouted reports</strong> after compatibility fail-safe</li>
+    <li><strong>Faster agency onboarding</strong> due to clear activation logic</li>
+    <li><strong>Architecture stability</strong> through clarified requirements</li>
+    <li><strong>Reduced rework</strong> via precise QA-driven logic</li>
+    <li><strong>Consistent UX</strong> across all user roles</li>
+</ul>
+
+<h2>WHAT I LEARNED</h2>
+
+<ul>
+    <li>QA is not just testing — it’s product thinking</li>
+    <li>Clarification early prevents weeks of rework</li>
+    <li>Complex systems require structured decision trees</li>
+    <li>Documentation must match real behavior</li>
+    <li>QA protects users, developers, and the business</li>
+</ul>
+
+<h2>CONCLUSION</h2>
+<p>
+Building a scalable multi-agency reporting engine requires more than code — it requires clear logic, deep testing, and proactive QA leadership.
+Through systematic analysis, continuous clarification, and structured testing, I ensured the system could scale nationwide while maintaining accuracy, reliability, and usability.
+</p>
+
+</body>
+</html>
